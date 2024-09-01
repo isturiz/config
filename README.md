@@ -4,3 +4,5 @@ Directories:
 
 - Kitty
 - Nvim
+- Fish
+- Zellij

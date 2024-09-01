@@ -1,3 +1,12 @@
 [submodule "nvim"]
 	path = nvim
 	url = https://github.com/isturiz/nvim.git
+[submodule "kitty"]
+	path = kitty
+	url = https://github.com/isturiz/kitty.git
+[submodule "zellij"]
+	path = zellij
+	url = https://github.com/isturiz/zellij.git
+[submodule "fish"]
+	path = fish
+	url = https://github.com/isturiz/fish.git
