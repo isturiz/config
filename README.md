@@ -1,1 +1,6 @@
 # config
+
+Directories:
+
+- Kitty
+- Nvim
