@@ -32,6 +32,9 @@ set -x XDG_CONFIG_HOME $HOME/.config
 # Ensure ~/.local/bin is in the PATH
 set -gx PATH $HOME/.local/bin $PATH
 
+# Open man with nvim
+set -x MANPAGER 'nvim +Man!'
+
 
 zoxide init fish | source
 
