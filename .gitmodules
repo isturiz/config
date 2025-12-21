@@ -1,7 +1,3 @@
-[submodule "nvim"]
-  path = nvim
-  url = git@github.com:isturiz/nvim.git
-	branch = main
 [submodule "kitty"]
 	path = kitty
   url = git@github.com:isturiz/kitty.git
