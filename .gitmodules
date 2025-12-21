@@ -1,7 +1,3 @@
-[submodule "kitty"]
-	path = kitty
-  url = git@github.com:isturiz/kitty.git
-	branch = main
 [submodule "zellij"]
 	path = zellij
   url = git@github.com:isturiz/zellij.git
