@@ -9,6 +9,8 @@ if status is-interactive
     if test -d ~/.local/bin
         set -gx PATH $PATH ~/.local/bin
     end
+
+    abbrs
 end
 
 # Load Homebrew environment if installed
