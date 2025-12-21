@@ -6,7 +6,3 @@
 	path = zellij
   url = git@github.com:isturiz/zellij.git
 	branch = main
-[submodule "fish"]
-	path = fish
-  url = git@github.com:isturiz/fish.git
-	branch = main
