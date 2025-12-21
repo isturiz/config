@@ -1,4 +1,0 @@
-[submodule "zellij"]
-	path = zellij
-  url = git@github.com:isturiz/zellij.git
-	branch = main
