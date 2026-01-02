@@ -17,6 +17,7 @@ return {
   "obsidian-nvim/obsidian.nvim",
   version = "*", -- recommended, use latest release instead of latest commit
   lazy = true,
+  enabled = false,
   ft = "markdown",
   event = { "BufReadPre " .. vim.fn.expand("~") .. "**/Obsidian/**.md" },
   keys = {
