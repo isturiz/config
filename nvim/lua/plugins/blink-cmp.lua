@@ -29,10 +29,11 @@ return {
     },
 
     -- (Default) Only show the documentation popup when manually triggered
-    completion = { documentation = { auto_show = false } },
+    completion = { documentation = { auto_show = true } },
 
     sources = {
-      default = { 'avante', 'copilot', 'lsp', 'path', 'snippets', 'buffer' },
+      -- default = { 'lsp', 'avante', 'copilot', 'path', 'snippets', 'buffer' },
+      default = { 'lsp', 'avante', 'copilot', 'path', 'snippets', 'buffer' },
       providers = {
         avante = {
           module = 'blink-cmp-avante',
