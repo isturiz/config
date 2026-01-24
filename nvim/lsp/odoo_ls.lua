@@ -1,23 +1,19 @@
--- ~/.config/nvim/lsp/odoo_ls.lua
-
-local server = vim.fn.expand("$HOME/.local/share/nvim/odoo/odoo_ls_server")
-local odools = "/Users/isturizdev/workspace/otros/odoocker-jr/odools.toml"
-
--- ficheros que definen la raíz del proyecto
-local root_markers = { { "odools.toml", ".git" } }
-
-vim.lsp.config("odoo_ls", {
+local server = "/mnt/odools_host/odoo_ls_server"
+local odools = "/mnt/odools/odools.toml"
+local stdlib = "/mnt/odools_host/typeshed/stdlib"
+return {
   cmd = {
     server,
-    "--config-path",
-    odools,
+    "--config-path", odools,
+    "--stdlib", stdlib,
   },
-  filetypes = { "python", "xml" },
-  root_markers = root_markers,
+  filetypes = { "python", "xml", "javascript" },
+  root_markers = { "odools.toml" },
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+
   settings = {
     Odoo = {
-      selectedProfile = "main",
-    },
+      selectedProfile = 'main',
+    }
   },
-})
-
+}
