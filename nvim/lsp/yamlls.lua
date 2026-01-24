@@ -1,6 +1,17 @@
+local root = vim.fn.getcwd()
+local schema = root .. "/schemas/mapping.schema.json"
+local schemas = {}
+
+if vim.loop.fs_stat(schema) then
+  schemas[schema] = {
+    root .. "/mapping.yaml",
+    root .. "/mapping/*.yaml",
+  }
+end
+
 return {
   cmd = { vim.fn.stdpath("data") .. "/mason/bin/yaml-language-server", "--stdio" },
-  filetypes = { "yaml" }, -- "yml" suele ser innecesario (extensión != filetype)
+  filetypes = { "yaml", "yml" },
   root_markers = { ".git" },
   settings = {
     redhat = { telemetry = { enabled = false } },
@@ -16,6 +27,7 @@ return {
       hover = true,
       completion = true,
       schemaStore = { enable = true },
+      schemas = schemas,
     },
   },
 }
