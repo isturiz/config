@@ -1,0 +1,5 @@
+shell /opt/homebrew/bin/fish
+
+macos_option_as_alt left
+font_size 14
+
