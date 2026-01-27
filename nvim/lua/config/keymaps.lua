@@ -39,6 +39,8 @@ vim.keymap.set('', '<leader>rr', ':source %<cr>', { desc = "Source the current f
 
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
+vim.keymap.set("n", "<leader>yd", ":let @+ = expand('%:p')<CR>", { desc = "Yank current file path" })
+
 -- Toggle text wrapping
 function _G.toggle_wrap()
   if vim.wo.wrap then
