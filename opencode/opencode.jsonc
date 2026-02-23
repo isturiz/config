@@ -1,13 +1,71 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+
+  // General permission
   "permission": {
-    "edit": "ask",
-    "bash": "ask",
-    "webfetch": "deny",
+    "read": {
+      "*": "ask",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "./**": "allow",
+      "./*": "allow"
+    },
+    "edit": {
+      "*": "ask",
+      "./**": "allow",
+      "./*": "allow"
+    },
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "grep *": "allow",
+      "rg *": "allow",
+      "ls *": "allow"
+    },
+    "grep": "allow",
+    "glob": "allow",
+    "list": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "question": "allow",
+    "webfetch": "ask",
     "doom_loop": "ask",
-    "external_directory": "ask"
+    "external_directory": {
+      "*": "ask",
+      "~/workspace/odoo/**": "allow"
+    }
   },
+
+  "mode": {
+    "build": {
+      "prompt": "{file:./prompts/build.txt}"
+    }
+  },
+
+  "command": {
+    "test": {
+      "template": "Run the full test suite with coverage report and show any failures.\nFocus on the failing tests and suggest fixes.",
+      "description": "Run tests with coverage",
+      "agent": "build"
+    }
+  },
+
+  "instructions": ["CONTRIBUTING.md", "docs/guidelines.md", ".cursor/rules/*.md"],
+
+  "formatter": false,
+
+  // Disable noisy directories
+  "watcher": {
+    "ignore": ["node_modules/**", "dist/**", ".git/**", "__pycache__/**"]
+  },
+
+  // Disable shared sessions
   "share": "disabled",
+
   "keybinds": {
     "leader": "ctrl+x",
     "app_exit": "ctrl+c,ctrl+d,<leader>q",

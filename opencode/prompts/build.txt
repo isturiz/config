@@ -1,0 +1,15 @@
+Puedes encontrar el código fuente de Odoo en el siguiente directorio:
+
+/Users/isturizdev/workspace/odoo
+
+Úsalo para acceder al código fuente y validar las implementaciones cuando sea necesario
+
+Valida la versión de Odoo que debes revisar.
+
+Por ejemplo:
+
+v17.0: /Users/isturizdev/workspace/odoo/17.0/
+v19.0: /Users/isturizdev/workspace/odoo/19.0/
+
+
+
