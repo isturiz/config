@@ -1,24 +1,24 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "autoupdate": false,
+  "autoupdate": "notify",
+  "mcp": {
+    "notion": {
+      "type": "remote",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  },
 
-  "plugin": ["@mohak34/opencode-notifier@latest"],
+  "plugin": ["@mohak34/opencode-notifier@0.1.30"],
 
   // General permission
   "permission": {
     "read": {
-      "*": "ask",
+      "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow",
-      "./**": "allow",
-      "./*": "allow"
+      "*.env.example": "allow"
     },
-    "edit": {
-      "*": "ask",
-      "./**": "allow",
-      "./*": "allow"
-    },
+    "edit": "allow",
     "bash": {
       "*": "ask",
       "git status*": "allow",
@@ -42,7 +42,7 @@
     }
   },
 
-  "mode": {
+  "agent": {
     "build": {
       "prompt": "{file:./prompts/build.txt}"
     }
