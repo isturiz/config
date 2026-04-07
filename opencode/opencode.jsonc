@@ -8,7 +8,9 @@
     }
   },
 
-  "plugin": ["@mohak34/opencode-notifier@0.1.30"],
+  "plugin": [
+    "@mohak34/opencode-notifier@0.1.30"
+  ],
 
   // General permission
   "permission": {
