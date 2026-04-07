@@ -12,9 +12,22 @@ function oc --description "Sync host config to server, then attach"
     set server_url (string replace -r '/+$' '' -- "$server_url")
 
     set -l sync_password "$OPENCODE_SERVER_PASSWORD"
+    set -l has_dir_arg 0
     set -l i 1
     while test $i -le (count $attach_args)
         set -l arg $attach_args[$i]
+
+        if test "$arg" = "--dir"
+            set has_dir_arg 1
+            set i (math "$i + 2")
+            continue
+        end
+
+        if string match -rq '^--dir=' -- "$arg"
+            set has_dir_arg 1
+            set i (math "$i + 1")
+            continue
+        end
 
         if test "$arg" = "-p" -o "$arg" = "--password"
             set -l next_i (math "$i + 1")
@@ -153,5 +166,10 @@ function oc --description "Sync host config to server, then attach"
         echo "oc: warning: could not resolve remote config path from $server_url/path"
     end
 
-    command opencode attach "$server_url" $attach_args
+    set -l final_attach_args $attach_args
+    if test $has_dir_arg -eq 0
+        set final_attach_args --dir /workspace $final_attach_args
+    end
+
+    command opencode attach "$server_url" $final_attach_args
 end
