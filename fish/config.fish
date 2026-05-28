@@ -62,3 +62,15 @@ end
 if test -d "$HOME/.opencode/bin"
     fish_add_path -g -p "$HOME/.opencode/bin"
 end
+
+# Docker Desktop CLI
+if test -d "/Applications/Docker.app/Contents/Resources/bin"
+    fish_add_path -g -p "/Applications/Docker.app/Contents/Resources/bin"
+end
+
+# Ollama
+if test -x /Applications/Ollama.app/Contents/Resources/ollama
+    if not contains /Applications/Ollama.app/Contents/Resources $PATH
+        set -gx PATH /Applications/Ollama.app/Contents/Resources $PATH
+    end
+end
