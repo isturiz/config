@@ -10,10 +10,6 @@ if status is-interactive
         abbrs
     end
 
-    # Load nvm.fish if nvm is installed
-    if type -q nvm
-        nvm use latest > /dev/null 2>&1
-    end
 end
 
 # Load Homebrew environment if installed
