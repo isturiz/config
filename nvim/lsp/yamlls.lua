@@ -2,7 +2,7 @@ local root = vim.fn.getcwd()
 local schema = root .. "/schemas/mapping.schema.json"
 local schemas = {}
 
-if vim.loop.fs_stat(schema) then
+if vim.uv.fs_stat(schema) then
   schemas[schema] = {
     root .. "/mapping.yaml",
     root .. "/mapping/*.yaml",

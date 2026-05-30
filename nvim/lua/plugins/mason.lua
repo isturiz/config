@@ -1,11 +1,3 @@
-return {
-  "mason-org/mason.nvim",
-  opts = {},
-  keys = {
-    {
-      "<leader>M",
-      ':Mason<CR>',
-      desc = "Open Mason",
-    },
-  },
-}
+require("mason").setup({})
+
+vim.keymap.set("n", "<leader>M", ":Mason<CR>", { desc = "Open Mason" })

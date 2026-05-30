@@ -1,6 +1,3 @@
-return {
-  "windwp/nvim-autopairs",
-  config = function()
-    require("nvim-autopairs").setup({})
-  end
-}
+vim.schedule(function()
+  require("nvim-autopairs").setup({})
+end)

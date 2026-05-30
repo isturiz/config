@@ -1,337 +1,216 @@
-return {
-	"folke/snacks.nvim",
-	priority = 1000,
-	lazy = false,
-	keys = {
+-- ============================================================
+-- Keymaps
+-- ============================================================
 
-		-- terminal
-		{
-			"<leader>\\",
-			function()
-				require("snacks").terminal()
-			end,
-			desc = "Toggle a terminal",
-			mode = { "n", "t" },
-		},
+-- terminal
+vim.keymap.set({ "n", "t" }, "<leader>\\", function()
+  require("snacks").terminal()
+end, { desc = "Toggle a terminal" })
 
-		-- zen
-		{
-			"<leader>z",
-			function()
-				require("snacks").zen()
-			end,
-			desc = "Toggle Zen Mode",
-		},
-		{
-			"<leader>Z",
-			function()
-				require("snacks").zen.zoom()
-			end,
-			desc = "Toggle Zoom",
-		},
+-- zen
+vim.keymap.set("n", "<leader>z", function()
+  require("snacks").zen()
+end, { desc = "Toggle Zen Mode" })
 
-		-- scratch
-		{
-			"<leader>.",
-			function()
-				require("snacks").scratch()
-			end,
-			desc = "Toggle Scratch Buffer",
-		},
-		{
-			"<leader>S",
-			function()
-				require("snacks").scratch.select()
-			end,
-			desc = "Select Scratch Buffer",
-		},
+vim.keymap.set("n", "<leader>Z", function()
+  require("snacks").zen.zoom()
+end, { desc = "Toggle Zoom" })
 
-		-- notifier
-		{
-			"<leader>nh",
-			function()
-				require("snacks").notifier.show_history()
-			end,
-			desc = "Notification History",
-		},
+-- scratch
+vim.keymap.set("n", "<leader>.", function()
+  require("snacks").scratch()
+end, { desc = "Toggle Scratch Buffer" })
 
-		-- bufdelete
-		{
-			"<leader>bd",
-			function()
-				require("snacks").bufdelete()
-			end,
-			desc = "Delete Buffer",
-		},
+vim.keymap.set("n", "<leader>S", function()
+  require("snacks").scratch.select()
+end, { desc = "Select Scratch Buffer" })
 
-		-- rename
-		{
-			"<leader>cR",
-			function()
-				require("snacks").rename.rename_file()
-			end,
-			desc = "Rename File",
-		},
+-- notifier
+vim.keymap.set("n", "<leader>nh", function()
+  require("snacks").notifier.show_history()
+end, { desc = "Notification History" })
 
-		-- gitbrowse
-		{
-			"<leader>gcf", -- TODO: improve this map
-			function()
-				require("snacks").gitbrowse()
-			end,
-			desc = "Git Browse",
-			mode = { "n", "v" },
-		},
+vim.keymap.set("n", "<leader>un", function()
+  require("snacks").notifier.hide()
+end, { desc = "Dismiss All Notifications" })
 
-		-- git
-		{
-			"<leader>gb",
-			function()
-				require("snacks").git.blame_line()
-			end,
-			desc = "Git Blame Line",
-		},
+-- bufdelete
+vim.keymap.set("n", "<leader>bd", function()
+  require("snacks").bufdelete()
+end, { desc = "Delete Buffer" })
 
-		-- lazygit
-		{
-			"<leader>lg",
-			function()
-				require("snacks").lazygit()
-			end,
-			desc = "Lazygit",
-		},
-		{
-			"<leader>gf",
-			function()
-				require("snacks").lazygit.log_file()
-			end,
-			desc = "Lazygit Current File History",
-		},
-		{
-			"<leader>gl",
-			function()
-				require("snacks").lazygit.log()
-			end,
-			desc = "Lazygit Log (cwd)",
-		},
+-- rename
+vim.keymap.set("n", "<leader>cR", function()
+  require("snacks").rename.rename_file()
+end, { desc = "Rename File" })
 
-		-- notifier
-		{
-			"<leader>un",
-			function()
-				require("snacks").notifier.hide()
-			end,
-			desc = "Dismiss All Notifications",
-		},
+-- gitbrowse
+vim.keymap.set({ "n", "v" }, "<leader>gcf", function()
+  require("snacks").gitbrowse()
+end, { desc = "Git Browse" })
 
-		-- picker
-		{
-			"<leader>pp",
-			function()
-				require("snacks").picker.smart({ multi = { "buffers", "files" } })
-			end,
-			desc = "Smart Picker",
-		},
-		{
-			"<leader>pf",
-			function()
-				require("snacks").picker.files()
-			end,
-			desc = "Files Picker",
-		},
-		{
-			"<leader>pe",
-			function()
-				require("snacks").picker.buffers()
-			end,
-			desc = "Buffers Picker",
-		},
-		{
-			"<leader>pg",
-			function()
-				require("snacks").picker.grep()
-			end,
-			desc = "Grep Picker",
-		},
-		{
-			"<leader>ph",
-			function()
-				require("snacks").picker.help()
-			end,
-			desc = "Help Picker",
-		},
-		{
-			"<leader>ps",
-			function()
-				require("snacks").picker.git_status()
-			end,
-			desc = "Git Status Picker",
-		},
-		{
-			"<leader>:",
-			function()
-				require("snacks").picker.command_history()
-			end,
-			desc = "Command history picker",
-		},
+-- git
+vim.keymap.set("n", "<leader>gb", function()
+  require("snacks").git.blame_line()
+end, { desc = "Git Blame Line" })
 
-		-- Automatically search across all immediate subdirectories of the current working directory.
-		-- Useful when your top-level folder contains multiple git repos (each in its own subdir).
-		{
-			"<leader>pG",
-			function()
-				-- Gather immediate subdirectories of the current working directory.
-				-- We skip some noisy directories by default (adjust the skip list if needed).
-				local cwd = vim.fn.getcwd()
-				local glob_results = vim.fn.glob(cwd .. "/*", 0, 1) -- returns a list
-				local dirs = {}
-				local skip = {
-					["node_modules"] = true,
-					[".git"] = true,
-					["target"] = true,
-					["build"] = true,
-				}
+-- lazygit
+vim.keymap.set("n", "<leader>lg", function()
+  require("snacks").lazygit()
+end, { desc = "Lazygit" })
 
-				for _, p in ipairs(glob_results) do
-					if vim.fn.isdirectory(p) == 1 then
-						local basename = vim.fn.fnamemodify(p, ":t")
-						if not skip[basename] then
-							table.insert(dirs, p)
-						end
-					end
-				end
+vim.keymap.set("n", "<leader>gf", function()
+  require("snacks").lazygit.log_file()
+end, { desc = "Lazygit Current File History" })
 
-				-- If no subdirs are found, fall back to the cwd itself.
-				if #dirs == 0 then
-					dirs = { cwd }
-				end
+vim.keymap.set("n", "<leader>gl", function()
+  require("snacks").lazygit.log()
+end, { desc = "Lazygit Log (cwd)" })
 
-				-- Open the snacks grep picker searching the collected directories.
-				-- need_search = false: allow typing immediately without requiring an initial pattern
-				-- live = true: enable live grep (works if ripgrep is available)
-				require("snacks").picker.grep({
-					dirs = dirs,
-					live = true,
-					need_search = true,
-					show_empty = true,
-				})
-			end,
-			desc = "Grep Picker sub-repositories ",
-		},
-		{
-			"<leader>pF",
-			function()
-				local cwd = vim.fn.getcwd()
-				-- Get list of entries in cwd (files and dirs)
-				local entries = vim.fn.glob(cwd .. "/*", 0, 1)
-				local dirs = {}
-				-- Skip list for noisy dirs (adjust as needed)
-				local skip = {
-					["node_modules"] = true,
-					[".git"] = true,
-					["target"] = true,
-					["build"] = true,
-					["dist"] = true,
-				}
+-- picker
+vim.keymap.set("n", "<leader>pp", function()
+  require("snacks").picker.smart({ multi = { "buffers", "files" } })
+end, { desc = "Smart Picker" })
 
-				for _, p in ipairs(entries) do
-					if vim.fn.isdirectory(p) == 1 then
-						local name = vim.fn.fnamemodify(p, ":t")
-						if not skip[name] then
-							table.insert(dirs, p)
-						end
-					end
-				end
+vim.keymap.set("n", "<leader>pf", function()
+  require("snacks").picker.files()
+end, { desc = "Files Picker" })
 
-				-- Fallback to cwd if no subdirectories found
-				if #dirs == 0 then
-					dirs = { cwd }
-				end
+vim.keymap.set("n", "<leader>pe", function()
+  require("snacks").picker.buffers()
+end, { desc = "Buffers Picker" })
 
-				-- Open snacks files picker searching the collected directories.
-				-- Use sensible defaults: show hidden = false, follow symlinks = false.
-				-- Adjust opts (hidden/ignored/follow/args) as you need.
-				require("snacks").picker.files({
-					dirs = dirs,
-					hidden = false,
-					ignored = false,
-					follow = false,
-					show_empty = true,
-				})
-			end,
-			desc = "Find files sub-repositories (auto-detect subdirs)",
-		},
-		{
-			"<leader>rp",
-			function()
-				local plugins_dir = vim.fn.expand("~/.config/nvim/lua/plugins")
-				-- gather all .lua files in the plugins directory
-				local files = vim.fn.globpath(plugins_dir, "*.lua", false, true)
-				local items = {}
+vim.keymap.set("n", "<leader>pg", function()
+  require("snacks").picker.grep()
+end, { desc = "Grep Picker" })
 
-				for _, f in ipairs(files) do
-					local name = vim.fn.fnamemodify(f, ":t") -- e.g. "foo.lua"
-					-- present names without the .lua extension to match original behavior
-					if name:sub(-4) == ".lua" then
-						name = name:sub(1, -5)
-					end
-					table.insert(items, name)
-				end
+vim.keymap.set("n", "<leader>ph", function()
+  require("snacks").picker.help()
+end, { desc = "Help Picker" })
 
-				-- if no plugin files found, offer a prompt to create one
-				if #items == 0 then
-					vim.schedule(function()
-						local name = vim.fn.input("No plugin files found. Create new plugin (name): ")
-						if name and name ~= "" then
-							local path = plugins_dir .. "/" .. name
-							if path:sub(-4) ~= ".lua" then
-								path = path .. ".lua"
-							end
-							vim.cmd("edit " .. vim.fn.fnameescape(path))
-						end
-					end)
-					return
-				end
+vim.keymap.set("n", "<leader>ps", function()
+  require("snacks").picker.git_status()
+end, { desc = "Git Status Picker" })
 
-				vim.ui.select(items, {
-					prompt = "Plugins",
-					fmt_item = function(item) return item end,
-				}, function(choice)
-					if not choice or choice == "" then
-						return
-					end
-					local path = plugins_dir .. "/" .. choice
-					if path:sub(-4) ~= ".lua" then
-						path = path .. ".lua"
-					end
-					vim.cmd("edit " .. vim.fn.fnameescape(path))
-				end)
-			end,
-			desc = "Find Plugins",
-		},
-	},
-	---@type snacks.Config
-	opts = {
-		-- your configuration comes here
-		-- or leave it empty to use the default settings
-		-- refer to the configuration section below
-		bigfile = { enabled = true },
-		indent = { enabled = true },
-		input = { enabled = true },
-		picker = require("meta-plugins.snacks.picker"),
-		notifier = { enabled = true },
-		quickfile = { enabled = true },
-		scroll = { enabled = true },
-		statuscolumn = { enabled = true },
-		words = { enabled = true },
-		image = {
-			enabled = true,
-			doc = {
-				inline = false,
-				float = true,
-				max_width = 60,
-				max_height = 30,
-			},
-		},
-	},
-}
+vim.keymap.set("n", "<leader>:", function()
+  require("snacks").picker.command_history()
+end, { desc = "Command history picker" })
+
+-- Grep across immediate subdirectories of cwd.
+-- Useful when the root directory contains multiple git repositories.
+vim.keymap.set("n", "<leader>pG", function()
+  local cwd = vim.fn.getcwd()
+  local glob_results = vim.fn.glob(cwd .. "/*", 0, 1)
+  local dirs = {}
+  local skip = { ["node_modules"] = true, [".git"] = true, ["target"] = true, ["build"] = true }
+
+  for _, p in ipairs(glob_results) do
+    if vim.fn.isdirectory(p) == 1 then
+      local basename = vim.fn.fnamemodify(p, ":t")
+      if not skip[basename] then
+        table.insert(dirs, p)
+      end
+    end
+  end
+
+  if #dirs == 0 then dirs = { cwd } end
+
+  require("snacks").picker.grep({
+    dirs = dirs,
+    live = true,
+    need_search = true,
+    show_empty = true,
+  })
+end, { desc = "Grep Picker sub-repositories" })
+
+-- Find files across immediate subdirectories of cwd.
+vim.keymap.set("n", "<leader>pF", function()
+  local cwd = vim.fn.getcwd()
+  local entries = vim.fn.glob(cwd .. "/*", 0, 1)
+  local dirs = {}
+  local skip = {
+    ["node_modules"] = true, [".git"] = true, ["target"] = true,
+    ["build"] = true, ["dist"] = true,
+  }
+
+  for _, p in ipairs(entries) do
+    if vim.fn.isdirectory(p) == 1 then
+      local name = vim.fn.fnamemodify(p, ":t")
+      if not skip[name] then
+        table.insert(dirs, p)
+      end
+    end
+  end
+
+  if #dirs == 0 then dirs = { cwd } end
+
+  require("snacks").picker.files({
+    dirs = dirs,
+    hidden = false,
+    ignored = false,
+    follow = false,
+    show_empty = true,
+  })
+end, { desc = "Find files sub-repositories (auto-detect subdirs)" })
+
+-- Open a plugin config file directly
+vim.keymap.set("n", "<leader>rp", function()
+  local plugins_dir = vim.fn.expand("~/.config/nvim/lua/plugins")
+  local files = vim.fn.globpath(plugins_dir, "*.lua", false, true)
+  local items = {}
+
+  for _, f in ipairs(files) do
+    local name = vim.fn.fnamemodify(f, ":t")
+    if name:sub(-4) == ".lua" then
+      name = name:sub(1, -5)
+    end
+    table.insert(items, name)
+  end
+
+  if #items == 0 then
+    vim.schedule(function()
+      local name = vim.fn.input("No plugin files found. Create new plugin (name): ")
+      if name and name ~= "" then
+        local path = plugins_dir .. "/" .. name
+        if path:sub(-4) ~= ".lua" then path = path .. ".lua" end
+        vim.cmd("edit " .. vim.fn.fnameescape(path))
+      end
+    end)
+    return
+  end
+
+  vim.ui.select(items, {
+    prompt = "Plugins",
+    fmt_item = function(item) return item end,
+  }, function(choice)
+    if not choice or choice == "" then return end
+    local path = plugins_dir .. "/" .. choice
+    if path:sub(-4) ~= ".lua" then path = path .. ".lua" end
+    vim.cmd("edit " .. vim.fn.fnameescape(path))
+  end)
+end, { desc = "Find Plugins" })
+
+-- ============================================================
+-- Setup
+-- ============================================================
+
+require("snacks").setup({
+  bigfile      = { enabled = true },
+  indent       = { enabled = true },
+  input        = { enabled = true },
+  picker       = require("meta-plugins.snacks.picker"),
+  notifier     = { enabled = true },
+  quickfile    = { enabled = true },
+  scroll       = { enabled = true },
+  statuscolumn = { enabled = true },
+  words        = { enabled = true },
+  image = {
+    enabled = true,
+    doc = {
+      inline     = false,
+      float      = true,
+      max_width  = 60,
+      max_height = 30,
+    },
+  },
+})
