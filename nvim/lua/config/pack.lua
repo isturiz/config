@@ -66,7 +66,6 @@ vim.pack.add({
   gh('zbirenbaum/copilot.lua'),
   gh('yetone/avante.nvim'),
   gh('ravitemer/mcphub.nvim'),
-  gh('NickvanDyke/opencode.nvim'),
 
   -- Avante deps
   gh('MeanderingProgrammer/render-markdown.nvim'),
