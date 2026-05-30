@@ -3,7 +3,7 @@
 -- ============================================================
 
 -- terminal
-vim.keymap.set({ "n", "t" }, "<leader>\\", function()
+vim.keymap.set("n", "<leader>\\", function()
   require("snacks").terminal()
 end, { desc = "Toggle a terminal" })
 
