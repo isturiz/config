@@ -70,3 +70,10 @@ if test -x /Applications/Ollama.app/Contents/Resources/ollama
         set -gx PATH /Applications/Ollama.app/Contents/Resources $PATH
     end
 end
+
+# pnpm
+set -gx PNPM_HOME "/Users/isturiz/Library/pnpm"
+if not string match -q -- "$PNPM_HOME/bin" $PATH
+  set -gx PATH "$PNPM_HOME/bin" $PATH
+end
+# pnpm end

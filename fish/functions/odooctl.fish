@@ -8,6 +8,7 @@ function _odooctl_help
     echo "  addons                 Ejecuta clone_addons_repos.py"
     echo "  run [args...]          Inicia odoo-bin con --dev=all"
     echo "  update [opts]          Actualiza módulos (--no-http --stop-after-init)"
+    echo "  passwd [opts]          Resetea contraseña de usuario"
     echo "  sh                     Abre shell fish dentro del contenedor odoo"
     echo "  logs [servicio]        Muestra logs en follow (por defecto: odoo)"
     echo "  doctor                 Muestra contexto detectado"
@@ -16,6 +17,11 @@ function _odooctl_help
     echo "Opciones de update:"
     echo "  -d, --db <db>          Base de datos objetivo"
     echo "  -u, --modules <mods>   Módulos (por defecto: all)"
+    echo
+    echo "Opciones de passwd:"
+    echo "  -d, --db <db>          Base de datos objetivo"
+    echo "  -u, --user <login>     Usuario (por defecto: admin)"
+    echo "  -p, --password <pass>  Password (por defecto: admin)"
     echo ""
     echo "Tips:"
     echo "  - Si defines ODOOCTL_DB en .env, update usa esa DB por defecto."
@@ -283,7 +289,93 @@ function odooctl --description "Atajos diarios para proyectos Odoo con Docker Co
                 return 1
             end
 
-            _odooctl_compose "$root" exec -T odoo /workspace/odoo/odoo-bin server -c /workspace/odoo.conf -d "$db" -u "$modules" --no-http --stop-after-init $extra
+            _odooctl_compose "$root" exec -T odoo /workspace/.venv/bin/python /workspace/odoo/odoo-bin server -c /workspace/odoo.conf -d "$db" -u "$modules" --no-http --stop-after-init $extra
+
+        case passwd reset-password
+            _odooctl_require_service_running "$root" odoo; or return 1
+
+            set -l db (_odooctl_env_get "$root" ODOOCTL_DB)
+            set -l login admin
+            set -l password admin
+            set -l args $argv[2..-1]
+            set -l i 1
+
+            while test $i -le (count $args)
+                set -l token $args[$i]
+                switch $token
+                    case -d --db
+                        set i (math $i + 1)
+                        if test $i -gt (count $args)
+                            _odooctl_error "Falta valor para $token"
+                            return 1
+                        end
+                        set db $args[$i]
+
+                    case -u --user
+                        set i (math $i + 1)
+                        if test $i -gt (count $args)
+                            _odooctl_error "Falta valor para $token"
+                            return 1
+                        end
+                        set login $args[$i]
+
+                    case -p --password
+                        set i (math $i + 1)
+                        if test $i -gt (count $args)
+                            _odooctl_error "Falta valor para $token"
+                            return 1
+                        end
+                        set password $args[$i]
+
+                    case -h --help
+                        echo "Uso: odooctl passwd -d <db> [-u <login>] [-p <password>]"
+                        echo "Defaults: user=admin password=admin"
+                        echo "Ejemplo: odooctl passwd -d rea -u admin -p admin"
+                        return 0
+
+                    case '*'
+                        _odooctl_error "Opción desconocida para passwd: $token"
+                        return 1
+                end
+
+                set i (math $i + 1)
+            end
+
+            if test -z "$db"
+                _odooctl_error "Debes indicar DB con -d/--db o definir ODOOCTL_DB en .env"
+                return 1
+            end
+
+            _odooctl_compose "$root" exec -T \
+                -e ODOOCTL_TARGET_LOGIN="$login" \
+                -e ODOOCTL_NEW_PASSWORD="$password" \
+                -e ODOOCTL_TARGET_DB="$db" \
+                odoo bash -lc '/workspace/.venv/bin/python /workspace/odoo/odoo-bin shell -c /workspace/odoo.conf -d "$ODOOCTL_TARGET_DB" <<'"'"'PY'"'"'
+import os
+
+if "env" not in globals():
+    raise RuntimeError("This script must be executed through `odoo-bin shell ... < script.py`")
+
+target_login = os.environ.get("ODOOCTL_TARGET_LOGIN", "admin")
+new_password = os.environ.get("ODOOCTL_NEW_PASSWORD", "admin")
+
+users = env["res.users"].sudo().with_context(active_test=False)
+user = users.search([("login", "=", target_login)], limit=1)
+
+if not user and target_login == "admin":
+    user = env.ref("base.user_admin", raise_if_not_found=False)
+    if user:
+        user = user.sudo().with_context(active_test=False)
+
+if not user:
+    raise SystemExit(f"[ODOOCTL-PASSWD] user not found: {target_login}")
+
+hashed_password = users._crypt_context().hash(new_password)
+users._set_encrypted_password(user.id, hashed_password)
+env.cr.commit()
+
+print(f"[ODOOCTL-PASSWD] password updated for login={user.login} id={user.id}")
+PY'
 
         case sh
             _odooctl_require_service_running "$root" odoo; or return 1
