@@ -11,6 +11,11 @@ function oc --description "Sync host config to server, then attach"
 
     set server_url (string replace -r '/+$' '' -- "$server_url")
 
+    set -l sync_username "opencode"
+    if set -q OPENCODE_SERVER_USERNAME; and test -n "$OPENCODE_SERVER_USERNAME"
+        set sync_username "$OPENCODE_SERVER_USERNAME"
+    end
+
     set -l sync_password "$OPENCODE_SERVER_PASSWORD"
     set -l i 1
     while test $i -le (count $attach_args)
@@ -29,6 +34,19 @@ function oc --description "Sync host config to server, then attach"
             set sync_password (string replace -- '--password=' '' -- "$arg")
         end
 
+        if test "$arg" = "-u" -o "$arg" = "--username"
+            set -l next_i (math "$i + 1")
+            if test $next_i -le (count $attach_args)
+                set sync_username $attach_args[$next_i]
+            end
+            set i (math "$i + 2")
+            continue
+        end
+
+        if string match -rq '^--username=' -- "$arg"
+            set sync_username (string replace -- '--username=' '' -- "$arg")
+        end
+
         set i (math "$i + 1")
     end
 
@@ -37,12 +55,12 @@ function oc --description "Sync host config to server, then attach"
         set -l auth_b64 ""
 
         if command -q python3
-            set auth_b64 (python3 -c 'import base64,sys; print(base64.b64encode(f"opencode:{sys.argv[1]}".encode()).decode())' "$sync_password" 2>/dev/null)
+            set auth_b64 (python3 -c 'import base64,sys; print(base64.b64encode(f"{sys.argv[1]}:{sys.argv[2]}".encode()).decode())' "$sync_username" "$sync_password" 2>/dev/null)
         end
 
         if test -z "$auth_b64"
             if command -q base64
-                set auth_b64 (printf "opencode:%s" "$sync_password" | base64 | tr -d '\n')
+                set auth_b64 (printf "%s:%s" "$sync_username" "$sync_password" | base64 | tr -d '\n')
             end
         end
 
