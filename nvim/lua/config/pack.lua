@@ -1,5 +1,29 @@
 -- Build hooks — must be registered BEFORE vim.pack.add()
 -- Only runs on install/update, not on every startup
+
+local function run_pack_hook(name, cmd, opts)
+  opts = vim.tbl_extend('force', { text = true }, opts or {})
+
+  vim.system(cmd, opts, function(obj)
+    if obj.code == 0 then return end
+
+    local output = vim.trim(table.concat({ obj.stdout or '', obj.stderr or '' }, '\n'))
+
+    vim.schedule(function()
+      vim.notify(
+        string.format(
+          'Pack hook failed for %s (exit %d): %s%s',
+          name,
+          obj.code,
+          table.concat(cmd, ' '),
+          output ~= '' and ('\n\n' .. output) or ''
+        ),
+        vim.log.levels.ERROR
+      )
+    end)
+  end)
+end
+
 vim.api.nvim_create_autocmd('PackChanged', {
   callback = function(ev)
     local name = ev.data.spec.name
@@ -7,13 +31,16 @@ vim.api.nvim_create_autocmd('PackChanged', {
     if kind ~= 'install' and kind ~= 'update' then return end
 
     if name == 'avante.nvim' then
-      vim.system({ 'make' }, { cwd = ev.data.path })
+      -- Avante needs native Lua libraries. By default this downloads the
+      -- prebuilt binaries using curl/tar; source builds require cargo.
+      run_pack_hook('avante.nvim', { 'make', 'BUILD_FROM_SOURCE=false' }, { cwd = ev.data.path })
 
     elseif name == 'nvim-treesitter' then
       -- TSUpdate requires the plugin to already be active
       if ev.data.active then
         vim.cmd('TSUpdate')
       end
+    end
   end,
 })
 
