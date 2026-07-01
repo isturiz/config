@@ -89,32 +89,6 @@ vim.schedule(function()
       list_opener = "copen",
       override_timeoutlen = 500,
     },
-
-    -- system_prompt as a function ensures the LLM always has the latest MCP
-    -- server state (evaluated on every message)
-    system_prompt = function()
-      local hub = require("mcphub").get_hub_instance()
-      return hub and hub:get_active_servers_prompt() or ""
-    end,
-    custom_tools = function()
-      return {
-        require("mcphub.extensions.avante").mcp_tool(),
-      }
-    end,
-
-    -- MCP Hub covers these operations; disabling Avante's to avoid duplicates
-    disabled_tools = {
-      "list_files",
-      "search_files",
-      "read_file",
-      "create_file",
-      "rename_file",
-      "delete_file",
-      "create_dir",
-      "rename_dir",
-      "delete_dir",
-      "bash",
-    },
   })
 
   -- AI action recipes (context-aware keymaps in visual mode)

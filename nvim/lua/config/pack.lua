@@ -14,10 +14,6 @@ vim.api.nvim_create_autocmd('PackChanged', {
       if ev.data.active then
         vim.cmd('TSUpdate')
       end
-
-    elseif name == 'mcphub.nvim' then
-      vim.system({ 'npm', 'install', '-g', 'mcp-hub@latest' })
-    end
   end,
 })
 
@@ -65,7 +61,6 @@ vim.pack.add({
   -- AI
   gh('zbirenbaum/copilot.lua'),
   gh('yetone/avante.nvim'),
-  gh('ravitemer/mcphub.nvim'),
 
   -- Avante deps
   gh('MeanderingProgrammer/render-markdown.nvim'),

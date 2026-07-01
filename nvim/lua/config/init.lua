@@ -21,4 +21,3 @@ require('plugins.none-ls')
 require('plugins.mason')
 require('plugins.render-markdown') -- before avante (visual dep)
 require('plugins.avante')          -- includes img-clip setup
-require('plugins.mcp-hub')         -- after avante
