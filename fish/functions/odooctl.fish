@@ -234,7 +234,7 @@ function odooctl --description "Atajos diarios para proyectos Odoo con Docker Co
 
         case deps
             _odooctl_require_service_running "$root" odoo; or return 1
-            _odooctl_compose "$root" exec -T odoo bash -lc 'uv sync && uv pip install -r odoo/requirements.txt'
+            _odooctl_compose "$root" exec -T odoo bash -lc 'cd /workspace && uv sync && uv pip install -r /workspace/odoo/requirements.txt'
 
         case addons
             _odooctl_require_service_running "$root" odoo; or return 1
