@@ -1,12 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": "notify",
-  "mcp": {
-    "notion": {
-      "type": "remote",
-      "url": "https://mcp.notion.com/mcp"
-    }
+
+  "experimental": {
+    "disable_paste_summary": true
   },
+
+  // "mcp": {
+  //   "notion": {
+  //     "type": "remote",
+  //     "url": "https://mcp.notion.com/mcp"
+  //   }
+  // },
 
   "plugin": [
     "@mohak34/opencode-notifier@0.2.8",
