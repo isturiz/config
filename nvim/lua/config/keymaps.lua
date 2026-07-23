@@ -41,6 +41,18 @@ vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 vim.keymap.set("n", "<leader>yd", ":let @+ = expand('%:p')<CR>", { desc = "Yank current file path" })
 
+vim.keymap.set("n", "<leader>yr", function()
+  local file_path = vim.fn.expand("%:p")
+  if file_path == "" then
+    return
+  end
+
+  local git_root = vim.fs.root(file_path, { ".git" })
+  local path = git_root and vim.fs.relpath(git_root, file_path) or file_path
+
+  vim.fn.setreg("+", path)
+end, { desc = "Yank current file path relative to Git root" })
+
 -- Toggle text wrapping
 function _G.toggle_wrap()
   if vim.wo.wrap then
