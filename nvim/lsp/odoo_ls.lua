@@ -1,19 +1,14 @@
-local server = "/mnt/odools_host/odoo_ls_server"
-local odools = "/mnt/odools/odools.toml"
-local stdlib = "/mnt/odools_host/typeshed/stdlib"
-return {
-  cmd = {
-    server,
-    "--config-path", odools,
-    "--stdlib", stdlib,
-  },
-  filetypes = { "python", "xml", "javascript" },
-  root_markers = { "odools.toml" },
-  capabilities = require("blink.cmp").get_lsp_capabilities(),
+---@type vim.lsp.Config
+local install_dir = vim.fn.stdpath("data") .. "/odoo"
 
+return {
+  cmd = { install_dir .. "/odoo_ls_server", "--log-level", "info" },
+  filetypes = { "python", "xml", "csv", "javascript", "typescript" },
+  root_markers = { "odools.toml" },
+  single_file_support = false,
   settings = {
     Odoo = {
-      selectedProfile = 'main',
-    }
+      selectedProfile = "default",
+    },
   },
 }
