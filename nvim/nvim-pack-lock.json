@@ -106,6 +106,10 @@
       "rev": "5adf0895310c1904e5abfaad40a2baad7fe44a07",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
+    "review.nvim": {
+      "rev": "4435a436e4adb5cb6ffffc467b2b2c1098dfc1bb",
+      "src": "https://github.com/vuki656/review.nvim"
+    },
     "snacks.nvim": {
       "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
       "src": "https://github.com/folke/snacks.nvim"

@@ -14,6 +14,7 @@ require('plugins.oil')
 require('plugins.harpoon')
 require('plugins.gitsigns')
 require('plugins.gitblame')
+require('plugins.review')
 require('plugins.tree-sitter')    -- before avante
 require('plugins.autopairs')
 require('plugins.conform')

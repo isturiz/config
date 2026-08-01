@@ -76,6 +76,7 @@ vim.pack.add({
   -- Git
   gh('lewis6991/gitsigns.nvim'),
   gh('f-person/git-blame.nvim'),
+  gh('vuki656/review.nvim'),
 
   -- Editing
   gh('windwp/nvim-autopairs'),
