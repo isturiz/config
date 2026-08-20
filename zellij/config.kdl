@@ -107,7 +107,7 @@ keybinds clear-defaults=true {
         bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
     }
     session {
-        bind "Alt o" { SwitchToMode "Normal"; }
+        bind "Alt e" { SwitchToMode "Normal"; }
         bind "Alt s" { SwitchToMode "Scroll"; }
         bind "d" { Detach; }
         bind "w" {
@@ -142,6 +142,8 @@ keybinds clear-defaults=true {
       bind "Alt g" { SwitchToMode "Locked"; }
       bind "Alt q" { Quit; }
       bind "Alt n" { NewPane; }
+      bind "Alt i" { MoveTab "Left"; }
+      bind "Alt o" { MoveTab "Right"; }
       bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
       bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
       bind "Alt j" "Alt Down" { MoveFocus "Down"; }
@@ -164,7 +166,7 @@ keybinds clear-defaults=true {
         bind "Alt s" { SwitchToMode "Scroll"; }
     }
     shared_except "session" "locked" {
-        bind "Alt o" { SwitchToMode "Session"; }
+        bind "Alt e" { SwitchToMode "Session"; }
     }
     shared_except "tab" "locked" {
         bind "Alt t" { SwitchToMode "Tab"; }
