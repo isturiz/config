@@ -1,0 +1,1 @@
+/Users/isturiz/workspace.work/main/realista/odoocker-realista/scripts/odx_db.py

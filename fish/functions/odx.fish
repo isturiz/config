@@ -1,13 +1,15 @@
 function _odooctl_help
-    echo "Uso: odx (o odooctl) <comando> [opciones]"
+    echo "Uso: odx <comando> [opciones]"
     echo
     echo "Comandos principales:"
     echo "  up                     Levanta contenedores (docker compose up -d)"
     echo "  down                   Baja contenedores"
-    echo "  deps                   Ejecuta uv sync + requirements de Odoo"
+    echo "  deps [--dry-run]       Instala requisitos del proyecto, Odoo y addons"
     echo "  addons                 Ejecuta clone_addons_repos.py"
     echo "  run [args...]          Inicia odoo-bin con --dev=all"
     echo "  update [opts]          Actualiza módulos (--no-http --stop-after-init)"
+    echo "  db <subcomando>        Gestiona bases: list, restore, drop"
+    echo "  restore <zip> [opts]   Alias de db restore (SQL y filestore, sin HTTP)"
     echo "  passwd [opts]          Resetea contraseña de usuario"
     echo "  sh                     Abre shell fish dentro del contenedor odoo"
     echo "  logs [servicio]        Muestra logs en follow (por defecto: odoo)"
@@ -22,6 +24,22 @@ function _odooctl_help
     echo "  -d, --db <db>          Base de datos objetivo"
     echo "  -u, --user <login>     Usuario (por defecto: admin)"
     echo "  -p, --password <pass>  Password (por defecto: admin)"
+    echo
+    echo "Opciones de restore:"
+    echo "  -d, --db <db>          Destino (fallback: ODOOCTL_DB en .env)"
+    echo "  --force               Elimina la DB y filestore existentes"
+    echo "  --no-neutralize       No neutraliza la copia restaurada"
+    echo "  -p, --password <pass>  Password del admin restaurado (por defecto: admin)"
+    echo "  Tras restaurar, prepara unaccent IMMUTABLE y resetea el password del admin."
+    echo "  Detén odx run antes de restaurar; mantén odoo y pgdb levantados."
+    echo
+    echo "Gestión de bases de datos:"
+    echo "  odx db list [--pattern 'test_*']"
+    echo "  odx db restore <zip> [-d <db>] [opciones de restore]"
+    echo "  odx db drop -d <db>"
+    echo "  odx db drop --pattern 'test_*' [--exclude <db>] [--dry-run]"
+    echo "  odx db drop --all --exclude <db> [--yes]"
+    echo "  drop exige selector explícito y confirmación; elimina DB y filestore."
     echo ""
     echo "Tips:"
     echo "  - Si defines ODOOCTL_DB en .env, update usa esa DB por defecto."
@@ -235,7 +253,16 @@ function odx --description "Comando principal para proyectos Odoo con Docker Com
 
         case deps
             _odooctl_require_service_running "$root" odoo; or return 1
-            _odooctl_compose "$root" exec -T odoo bash -lc 'cd /workspace && uv sync && uv pip install -r /workspace/odoo/requirements.txt'
+            if test -f "$root/install_odoo_deps.py"
+                _odooctl_compose "$root" exec -T odoo python3 /workspace/install_odoo_deps.py $argv[2..-1]
+            else
+                # Preserve the existing workflow for other Odoo workspaces.
+                if test (count $argv) -gt 1
+                    _odooctl_error "Este proyecto no admite opciones para deps"
+                    return 2
+                end
+                _odooctl_compose "$root" exec -T odoo bash -lc 'cd /workspace && uv sync && uv pip install -r /workspace/odoo/requirements.txt'
+            end
 
         case addons
             _odooctl_require_service_running "$root" odoo; or return 1
@@ -244,6 +271,148 @@ function odx --description "Comando principal para proyectos Odoo con Docker Com
         case run
             _odooctl_require_service_running "$root" odoo; or return 1
             _odooctl_compose "$root" exec -it odoo /workspace/.venv/bin/python /workspace/odoo/odoo-bin -c /workspace/odoo.conf --dev=all $argv[2..-1]
+
+        case db
+            set -l subcommand $argv[2]
+            switch "$subcommand"
+                case '' help -h --help
+                    echo "Uso: odx db <list|restore|drop> [opciones]"
+                    echo "  list [--pattern 'test_*'] [--exclude <db>]"
+                    echo "  restore <zip> [-d <db>] [--force] [--no-neutralize] [-p <password>]"
+                    echo "  drop <-d <db>|--pattern 'test_*'|--all> [--exclude <db>] [--dry-run] [--yes]"
+                    echo "--exclude usa nombres exactos y puede repetirse. drop elimina DB y filestore."
+                    return 0
+                case restore
+                    odx restore $argv[3..-1]
+                    return $status
+                case list drop
+                    set -l backend "$__fish_config_dir/functions/odx_db.py"
+                    if not test -f "$backend"
+                        _odooctl_error "Falta $backend. Instala scripts/odx_db.py junto al helper global."
+                        return 1
+                    end
+                    set -l source (string collect < "$backend")
+                    if contains -- --help $argv[3..-1]; or contains -- -h $argv[3..-1]
+                        _odooctl_compose "$root" exec -T odoo /workspace/.venv/bin/python -c "$source" $argv[2..-1]
+                        return $status
+                    end
+                    _odooctl_require_service_running "$root" odoo; or return 1
+                    _odooctl_require_service_running "$root" pgdb; or return 1
+                    set -l interactive 0
+                    if isatty stdin
+                        set interactive 1
+                    end
+                    _odooctl_compose "$root" exec -T -e ODOOCTL_INTERACTIVE=$interactive odoo /workspace/.venv/bin/python -c "$source" $argv[2..-1]
+                    return $status
+                case '*'
+                    _odooctl_error "Subcomando db desconocido: $subcommand. Consulta odx db --help"
+                    return 2
+            end
+
+        case restore
+            set -l args $argv[2..-1]
+            argparse 'd/db=' 'p/password=' force no-neutralize 'h/help' -- $args; or return 2
+            if set -q _flag_help
+                echo "Uso: odx db restore <zip> [-d <db>] [-p <password>] [--force] [--no-neutralize]"
+                echo "Alias compatible: odx restore <zip> [opciones]"
+                echo "ZIP local dentro del proyecto o ruta /workspace/...; DB por defecto: ODOOCTL_DB."
+                echo "Neutraliza por defecto. --force elimina DB y filestore existentes."
+                echo "Prepara unaccent IMMUTABLE y resetea el admin (password por defecto: admin)."
+                echo "Detén odx run antes de restaurar y reserva espacio para descomprimir el ZIP."
+                return 0
+            end
+            if test (count $argv) -ne 1
+                _odooctl_error "Debes indicar exactamente un backup ZIP. Consulta odx restore --help"
+                return 2
+            end
+            set -l db (_odooctl_env_get "$root" ODOOCTL_DB)
+            if set -q _flag_db
+                set db "$_flag_db"
+            end
+            if test -z "$db"; or string match -q -- '-*' "$db"
+                _odooctl_error "Debes indicar una DB válida con -d/--db o definir ODOOCTL_DB en .env"
+                return 2
+            end
+            set -l password admin
+            if set -q _flag_password
+                set password "$_flag_password"
+            end
+            if test -z "$password"
+                _odooctl_error "El password del administrador no puede estar vacío"
+                return 2
+            end
+            set -l backup "$argv[1]"
+            if not string match -q '/workspace/*' -- "$backup"
+                set -l local_path (path resolve -- "$backup")
+                set -l project_path (path resolve -- "$root")
+                if not test -f "$local_path"; or not string match -q -- "$project_path/*" "$local_path"
+                    _odooctl_error "El ZIP debe existir dentro del proyecto o usar una ruta /workspace/..."
+                    return 2
+                end
+                set backup /workspace/(string sub -s (math (string length -- "$project_path") + 2) -- "$local_path")
+            end
+            _odooctl_require_service_running "$root" odoo; or return 1
+            _odooctl_require_service_running "$root" pgdb; or return 1
+            # Validate before Odoo processes --force (which drops the target first).
+            _odooctl_compose "$root" exec -T odoo /workspace/.venv/bin/python -c '
+import sys
+import zipfile
+from pathlib import Path
+
+try:
+    backup = Path(sys.argv[1]).resolve(strict=True)
+    if not backup.is_relative_to("/workspace") or not backup.is_file():
+        raise ValueError("El backup debe ser un archivo dentro de /workspace")
+    print("Validando integridad del ZIP (puede tardar)...", flush=True)
+    with zipfile.ZipFile(backup) as archive:
+        if "dump.sql" not in archive.namelist() or not archive.getinfo("dump.sql").file_size:
+            raise ValueError("El ZIP no contiene un dump.sql válido")
+        bad_member = archive.testzip()
+        if bad_member:
+            raise ValueError(f"Miembro ZIP corrupto: {bad_member}")
+except Exception as error:
+    sys.exit(f"odx: backup inválido: {error}")
+' "$backup"; or return $status
+            set -l options --neutralize
+            if set -q _flag_no_neutralize
+                set options
+            end
+            if set -q _flag_force
+                echo "ATENCIÓN: se eliminarán la DB '$db' y su filestore si existen." >&2
+                set -a options --force
+            end
+            echo "Restaurando '$backup' en '$db'. Mantén esta terminal abierta y odx run detenido."
+            _odooctl_compose "$root" exec -T odoo /workspace/.venv/bin/python /workspace/odoo/odoo-bin db -c /workspace/odoo.conf load $options -- "$db" "$backup"
+            or return $status
+
+            echo "Preparando unaccent IMMUTABLE en '$db'..."
+            # Use SQL without loading a registry, which may require unaccent already.
+            _odooctl_compose "$root" exec -T odoo /workspace/.venv/bin/python -c '
+import sys
+
+sys.path.insert(0, "/workspace/odoo")
+from odoo import sql_db
+from odoo.tools import config
+
+config.parse_config(["-c", "/workspace/odoo.conf"])
+with sql_db.db_connect(sys.argv[1]).cursor() as cr:
+    cr.execute("CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public")
+    cr.execute("ALTER FUNCTION public.unaccent(text) IMMUTABLE")
+' "$db"
+            set -l prepare_status $status
+            if test $prepare_status -ne 0
+                _odooctl_error "La base '$db' está restaurada, pero falló la preparación de unaccent. No se cambió el password."
+                return $prepare_status
+            end
+
+            odx passwd -d "$db" -u admin -p "$password"
+            set -l password_status $status
+            if test $password_status -ne 0
+                _odooctl_error "La base '$db' está restaurada y unaccent preparado, pero falló el cambio de password del admin."
+                return $password_status
+            end
+            echo "Base '$db' restaurada: unaccent IMMUTABLE y password del administrador actualizado."
+            return 0
 
         case update
             _odooctl_require_service_running "$root" odoo; or return 1
