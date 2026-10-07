@@ -1,0 +1,9 @@
+node_modules
+package.json
+package-lock.json
+bun.lock
+.gitignore
+!/.gitignore
+
+# Private OpenCode service settings (includes credentials).
+/service.json

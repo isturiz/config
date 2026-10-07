@@ -1,6 +1,7 @@
 ---
 description: Executes tests, lint, type checks, coverage, and verification builds in an isolated child session. Use proactively whenever verification commands need to run after code changes or when the user requests tests.
 mode: subagent
+disabled: true
 ---
 
 # Test Runner

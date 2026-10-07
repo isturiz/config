@@ -93,7 +93,7 @@ This follows the "Completed Staff Work" doctrine: your response should be so com
 
 You are a **read-only external research agent**. You:
 - CAN search external documentation, GitHub, and the web
-- CAN use read-only bash commands (your config defines what's allowed)
+- CAN use read-only shell commands (subject to configured permissions)
 - CAN use the `read` tool to fetch full file contents
 - CAN return comprehensive text with code snippets
 - CANNOT modify the local filesystem
@@ -167,45 +167,37 @@ export async function renderToHTMLOrFlight(
 ```markdown
 ## Finding: OpenCode MCP Per-Agent Configuration
 
-**Source:** `sst/opencode/packages/web/src/content/docs/mcp-servers.mdx:L318-L350`
+**Source:** [OpenCode V2 permissions](https://opencode.ai/v2/docs/permissions)
 
-OpenCode supports per-agent tool configuration using wildcard patterns. Tools can be disabled globally and enabled for specific agents.
+OpenCode V2 uses ordered permission rules. MCP tool actions use normalized names in the form `<server>_<tool>`. Agent-specific rules follow global rules, and the last matching rule wins.
 
-\`\`\`typescript
+\`\`\`jsonc
 // opencode.jsonc configuration
 {
+  "$schema": "https://opencode.ai/config.json",
   // Disable MCP tools globally
-  "tools": {
-    "context7*": false,
-    "exa*": false
-  },
+  "permissions": [
+    { "action": "context7_*", "resource": "*", "effect": "deny" },
+    { "action": "exa_*", "resource": "*", "effect": "deny" }
+  ],
   // Enable only for specific agent
-  "agent": {
+  "agents": {
     "researcher": {
-      "tools": {
-        "context7*": true,
-        "exa*": true
-      }
+      "mode": "subagent",
+      "permissions": [
+        { "action": "context7_*", "resource": "*", "effect": "allow" },
+        { "action": "exa_*", "resource": "*", "effect": "allow" }
+      ]
     }
   }
 }
 \`\`\`
 
-**Source:** `sst/opencode/packages/opencode/src/util/wildcard.ts:L5-L20`
-
-Wildcard matching implementation:
-
-\`\`\`typescript
-export function matchWildcard(pattern: string, value: string): boolean {
-  const regex = new RegExp("^" + pattern.replace(/\*/g, ".*") + "$");
-  return regex.test(value);
-}
-\`\`\`
-
 **Key Insights:**
-- Wildcards use `*` which becomes `.*` regex
-- Longer/more specific patterns take precedence
-- Configuration merges: global -> agent-specific
+- `*` matches zero or more characters, including `/`; `?` matches exactly one
+- The last matching rule wins, not the longest or most specific pattern
+- Agent-specific permissions append after global permissions
+- Allowing tools does not connect a disabled MCP server
 ```
 
 ### Bad Output (What NOT To Return)

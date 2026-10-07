@@ -69,11 +69,12 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ### AGENTS.md Location Guidelines
 
-- **Profile instructions** → Place in profile's `AGENTS.md` (`~/.config/opencode/profiles/{name}/AGENTS.md`)
-- **Project instructions** → Place in project root `AGENTS.md` or `.opencode/AGENTS.md`
-- **Discovery behavior** → OCX walks up from project directory to git root, finding instruction files at each level
-- **Filtering** → Profile's `exclude`/`include` patterns control which project files OpenCode sees
-- **Note** → Project AGENTS.md may be excluded by profile patterns; check your profile's `ocx.jsonc`
+- **Global instructions** → Place in `~/.config/opencode/AGENTS.md`
+- **Project instructions** → Place in the project root `AGENTS.md`; use nested `AGENTS.md` files for narrower guidance
+- **Discovery behavior** → OpenCode V2 loads ambient `AGENTS.md` files from the workspace toward home; for projects outside home, discovery stops at the project root
+- **Nested instructions** → Reading or listing a project area loads applicable nested `AGENTS.md` files
+- **Other formats** → V2 does not currently resolve the `instructions` configuration array or use `CLAUDE.md` as a fallback
+- **Reference** → https://opencode.ai/v2/docs/instructions
 
 ## FORBIDDEN ACTIONS
 

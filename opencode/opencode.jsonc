@@ -1,69 +1,73 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "autoupdate": "notify",
+  "update": "notify",
 
-  "experimental": {
-    "disable_paste_summary": true
+  "mcp": {
+    "servers": {
+      // "notion": {
+      //   "type": "remote",
+      //   "url": "https://mcp.notion.com/mcp"
+      // }
+      "gh_grep": {
+        "type": "remote",
+        "url": "https://mcp.grep.app"
+      },
+      "context7": {
+        "type": "remote",
+        "disabled": true,
+        "url": "https://mcp.context7.com/mcp",
+        "headers": {
+          "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+        }
+      },
+      "github": {
+        "type": "remote",
+        "url": "https://api.githubcopilot.com/mcp/",
+        // Keep disabled until GITHUB_PAT is available to the OpenCode server.
+        "disabled": true,
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:GITHUB_PAT}"
+        }
+      }
+    }
   },
 
-  // "mcp": {
-  //   "notion": {
-  //     "type": "remote",
-  //     "url": "https://mcp.notion.com/mcp"
-  //   }
-  // },
-
-  "plugin": [
-    "@mohak34/opencode-notifier@0.2.8"
+  // Ordered permissions: the last matching rule wins.
+  "permissions": [
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "read", "resource": "*.env.example", "effect": "allow" },
+    { "action": "edit", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "git *", "effect": "allow" },
+    { "action": "shell", "resource": "git push*", "effect": "ask" },
+    { "action": "shell", "resource": "git pull*", "effect": "ask" },
+    { "action": "shell", "resource": "git commit*", "effect": "ask" },
+    { "action": "shell", "resource": "grep *", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "list", "resource": "*", "effect": "allow" },
+    { "action": "skill", "resource": "*", "effect": "allow" },
+    { "action": "todowrite", "resource": "*", "effect": "allow" },
+    { "action": "todoread", "resource": "*", "effect": "allow" },
+    { "action": "question", "resource": "*", "effect": "allow" },
+    { "action": "webfetch", "resource": "*", "effect": "ask" },
+    { "action": "doom_loop", "resource": "*", "effect": "ask" },
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    { "action": "external_directory", "resource": "~/workspace/odoo/**", "effect": "allow" }
   ],
 
-  // General permission
-  "permission": {
-    "read": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow"
-    },
-    "edit": "allow",
-    "bash": {
-      "*": "ask",
-      "git status*": "allow",
-      "git diff*": "allow",
-      "grep *": "allow",
-      "rg *": "allow",
-      "ls *": "allow"
-    },
-    "grep": "allow",
-    "glob": "allow",
-    "list": "allow",
-    "skill": "allow",
-    "todowrite": "allow",
-    "todoread": "allow",
-    "question": "allow",
-    "webfetch": "ask",
-    "doom_loop": "ask",
-    "external_directory": {
-      "*": "ask",
-      "~/workspace/odoo/**": "allow"
-    }
-  },
-
-  "agent": {
-    "build": {
-      "prompt": "{file:./prompts/build.txt}"
-    }
-  },
-
-  "command": {
+  "commands": {
     "test": {
       "template": "Run the full test suite with coverage report and show any failures.\nFocus on the failing tests and suggest fixes.",
       "description": "Run tests with coverage",
       "agent": "build"
     }
   },
-
-  "instructions": ["CONTRIBUTING.md", "docs/guidelines.md", ".cursor/rules/*.md"],
 
   "formatter": false,
 

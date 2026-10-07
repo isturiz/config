@@ -33,7 +33,7 @@ This is non-negotiable. The philosophy defines the quality standards your code m
 | `edit` | Modify existing files |
 | `glob` | Find files by pattern |
 | `grep` | Search for code patterns |
-| `bash` | Run builds, lints, type-checks, and tests |
+| `shell` | Run builds, lints, type-checks, and tests |
 
 ## Authority: Autonomous Actions
 
@@ -91,18 +91,17 @@ You have autonomy to handle implementation details without asking:
 - **NEVER** ignore philosophy violations - refactor until compliant
 - **NEVER** spawn or delegate to other agents - you are a leaf agent
 
-## Bash Command Guidelines
+## Shell Command Guidelines
 
-Use bash for verification and builds only:
+Use the shell tool for verification and builds only. Prefer `pnpm` when the project supports it:
 
 ✅ **Allowed:**
 ```bash
-bun run build
-bun run check
-bun run test
-bun run lint
-npm run build
-npx tsc --noEmit
+pnpm run build
+pnpm run check
+pnpm run test
+pnpm run lint
+pnpm exec tsc --noEmit
 ```
 
 ❌ **Avoid:**
