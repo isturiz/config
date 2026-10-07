@@ -25,14 +25,25 @@ the current task. Do not run `git commit`.
 
 ## Inspect the task changes
 
-- Base the message on the completed work, the relevant diff, and verification
-  results.
+- Base the message on the completed changes and the relevant diff, not on a
+  report of the work performed.
 - Exclude unrelated changes that were already present in the worktree.
 - If the task produced multiple independent changes that should be committed
   separately, provide one message per logical commit.
 - Confirm that actual file changes from the current implementation remain.
   If no qualifying changes remain (including when edits were fully reverted),
   omit all commit-related output.
+
+## Focus on the change
+
+- Explain the problem, the change introduced, and decisions needed to understand
+  its behavior or impact. Avoid exhaustive lists of implementation details.
+- Exclude execution and validation reports: commands run, checks performed,
+  passing tests, test counts, and installation or upgrade verification results.
+  Put that information in the task summary outside the commit message instead.
+- Adding or modifying tests can be part of the change and worth mentioning;
+  merely running them is not. Include each sentence only if it helps explain
+  the change, not document the work session.
 
 ## Follow the Odoo format
 
@@ -43,7 +54,6 @@ Write the entire commit message in English using this structure:
 
 Explain why the change is needed and the user or business impact. Mention what
 was changed only when it clarifies a technical decision or non-obvious behavior.
-Include relevant verification details when useful.
 
 [Optional reference]
 ```

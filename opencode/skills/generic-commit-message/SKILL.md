@@ -10,8 +10,8 @@ part of that task. Do not run `git commit`.
 
 ## Inspect the task changes
 
-- Base the message on the completed work, the relevant staged and unstaged
-  diff, and verification results.
+- Base the message on the completed changes and the relevant staged and
+  unstaged diff, not on a report of the work performed.
 - Exclude unrelated changes that were already present in the worktree.
 - Check repository instructions and recent commit history before choosing the
   message format.
@@ -20,6 +20,17 @@ part of that task. Do not run `git commit`.
 - If no files changed, output exactly:
 
   `Commit message: Not applicable (no files changed).`
+
+## Focus on the change
+
+- Explain the problem, the change introduced, and decisions needed to understand
+  its behavior or impact. Avoid exhaustive lists of implementation details.
+- Exclude execution and validation reports: commands run, checks performed,
+  passing tests, test counts, and installation or upgrade verification results.
+  Put that information in the task summary outside the commit message instead.
+- Adding or modifying tests can be part of the change and worth mentioning;
+  merely running them is not. Include each sentence only if it helps explain
+  the change, not document the work session.
 
 ## Choose the repository's format
 
