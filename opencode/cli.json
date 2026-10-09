@@ -1,7 +1,13 @@
 {
   "$schema": "https://opencode.ai/v2/cli.json",
   "plugins": [
-    "/Users/isturiz/workspace.personal/test/opencode-session-tabs-toggle"
+    "/Users/isturiz/workspace.personal/test/opencode-session-tabs-toggle",
+    {
+      "package": "/Users/isturiz/workspace.personal/test/opencode-session-tags",
+      "options": {
+        "extraTags": []
+      }
+    }
   ],
   "keybinds": {
     "leader": "ctrl+x",
@@ -107,14 +113,15 @@
     "thinking": "hide",
     "markdown": "rendered",
     "verbosity": "medium",
-    "permissions": "autoaccept"
+    "permissions": "autoaccept",
+    "image_preview": true
   },
   "animations": true,
   "theme": {
     "name": "opencode"
   },
   "tabs": {
-    "mode": "auto",
+    "mode": "off",
     "scope": "global",
     "layout": "vertical",
     "indicators": "status"
